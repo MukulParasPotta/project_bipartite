@@ -3,3 +3,10 @@ slides/*.*
 *_assets/*.*
 *.pdf
 *.pptx
+*.mp4
+*.tex
+*.aux
+*.dvi
+*.svg
+*.log
+*.txt
