@@ -1,5 +1,5 @@
-media/
-slides/
-*_assets/
+media/*.*
+slides/*.*
+*_assets/*.*
 *.pdf
 *.pptx
