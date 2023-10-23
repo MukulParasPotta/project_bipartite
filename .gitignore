@@ -10,3 +10,4 @@ slides/*.*
 *.svg
 *.log
 *.txt
+algorithms/bipartite/__pycache__/bipartite.cpython-311.pyc

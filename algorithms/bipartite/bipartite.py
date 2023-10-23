@@ -23,7 +23,7 @@ class BipartiteGraph1(Slide):
         myBaseTemplate = TexTemplate(documentclass="\documentclass[preview]{standalone}")
         myBaseTemplate.add_to_preamble(r"\usepackage{ragged2e}")
         myBaseTemplate.add_to_preamble(r"\usepackage{xcolor}")
-        answer = Tex("This is a Bipartite Graph, while this is not.",font_size=50, stroke_width=2)
+        answer = Tex("One of them is a Bipartite Graph! Any guesses?",font_size=50, stroke_width=2)
         M_graph = Graph(vertices=[1,2,4,5,3],edges=M_graph_edge_list,layout="circular",layout_scale=0.6).set_color(GREEN)
         self.play(Write(M_graph.shift(DOWN/2 + 2*LEFT)))
         A_graph = Graph(vertices=range(1,6),edges=A_graph_edge_list,layout="circular",layout_scale=0.6).set_color(RED).shift(DOWN/2 + 2*RIGHT)
@@ -34,7 +34,7 @@ class BipartiteGraph1(Slide):
         self.play(Write(question))
         self.next_slide()
         self.play(FadeOut(question))
-        self.next_slide()
+        #self.next_slide()
 
         question2 = Tex("How is this graph different from this graph?",font_size=40, stroke_width=2).shift(0.5*UP)
         self.play(Write(question2), run_time=3)
@@ -52,116 +52,48 @@ class BipartiteGraph1(Slide):
         A_graph.shift(DOWN)
         header_group = VGroup(answer, graph_group)
         self.play(Write(header_group))
-        self.play(Indicate(M_graph,color=GREEN))
-        self.play(Indicate(A_graph,color=RED))
+        self.play(Indicate(graph_group))
 
         self.next_slide()
-        self.play(FadeOut(header_group))
+        self.play(FadeOut(answer))
+        answer = Tex("This one is! But... why?")
+        self.play(Write(answer), Indicate(M_graph))
+        self.next_slide()
+        self.play(FadeOut(answer, M_graph, A_graph))
         self.next_slide()
 
-class IntervalScheduling2(Slide):
+class BipartiteGraph2(Slide):
     def construct(self):
-        l0 = NumberLine(
-            x_range=[0, 48, 1],
-            length=12,
-            color=BLUE,
-        )
-        l0.align_to(np.array([-6,-1,0]),LEFT+UP)
-        self.play(Create(l0))
-
-        startingx=[-5.5,-4,-1.25,1.1,-6,-3.75,-1.5,1.3,3.15]
-        startingy=[0,0,0,0,1,1,1,1,1]
-        wid=[1,2,2,1.5,1.75,2,2.25,1.5,0.5]
-        textinsideRectangle = [None]*9
-        r = [None]*22
-        for i in range(4):
-            r[i] = Rectangle(height=0.4, width=wid[i], color=GREEN)
-            r[i].align_to(np.array([startingx[i],startingy[i],0]),LEFT+UP)
-            textinsideRectangle[i] = Tex("{$a_" + str(i+1) + "$", font_size=30, stroke_width=2).shift(r[i].get_center())
-            self.play(Create(r[i]), Write(textinsideRectangle[i]))
-
-        ourAnswer = Text("Our Answer", font_size=25, color=GREEN ).next_to(r[3]).shift(RIGHT)
-        self.play(Write(ourAnswer))
-
-        optimalAnswer = Text("Optimal Answer", font_size=25, color=RED).align_to(ourAnswer,LEFT).align_to(np.array([0,1,0]),UP)
-        self.play(Create(optimalAnswer))
-        r[4] = Rectangle(height=0.4, width=wid[4], color=RED)
-        r[4].align_to(np.array([startingx[4],startingy[4],0]),LEFT+UP)
-        textinsideRectangle[4] = Tex("{$o_1$", font_size=25,stroke_width=2).shift(r[4].get_center())
-
-        self.play(Create(r[4]), Write(textinsideRectangle[4]))
-        textinsideRectangle[4].add_updater(lambda x: x.move_to(r[4].get_center()))
+        what = Tex(r"Before that, what does it mean for a graph $G$ to be bipartite?",
+                   tex_environment=None,
+                   tex_template=TexTemplateLibrary.threeb1b)
+        what2 = Tex(r"If a graph $G$ is bipartite, vertices in $G$ can be split \\ \
+                   into two groups $X$ and $Y$ such that:",
+                   tex_environment=None,
+                   tex_template=TexTemplateLibrary.threeb1b)
+        what2.shift(1.1*LEFT)
+        self.play(Write(what))
         self.next_slide()
-        q1 = Text("Can this happen?", font_size=25, color=RED).next_to(r[4], UP)
-        r4copy = r[4].copy()
-        self.play(Create(q1),r[4].animate.become(Rectangle(height=0.4,width=1, color=RED).align_to(np.array([startingx[4],startingy[4],0]),LEFT+UP)))
+        self.play(what.animate.shift(3*UP))
+        self.play(Write(what2))
         self.next_slide()
-        self.play(q1.animate.become(Text("No", font_size=25, color=GREEN)).next_to(r[4], UP))
-
+        self.play(what2.animate.shift(2*UP))
+        properties = Tex(
+            "\item There are $some$ edges (possibly $none$) \\\\ connecting vertices in $X$ with those in $Y$.\item There are no edges connecting vertices within $X$ or $Y$.", 
+            tex_environment="enumerate",
+            tex_template=TexTemplateLibrary.threeb1b)
+        self.play(Write(properties.align_on_border(LEFT)))
         self.next_slide()
-        self.play(FadeOut(q1),r[4].animate.become(r4copy))
-
-        greenDashed = DashedLine(start=np.array([startingx[0]+wid[0],-1,0]), end=np.array([startingx[0]+wid[0],4,0]),color=GREEN )
-        redDashed = DashedLine(start=np.array([startingx[4]+wid[4],-1,0]), end=np.array([startingx[4]+wid[4],4,0]),color=RED )
-        self.play(GrowFromEdge(greenDashed,DOWN))
-        self.play(GrowFromEdge(redDashed,DOWN))
+        #self.play(VGroup(what, properties).animate.scale(0.45).shift(3 * LEFT + UP))
+        question = Tex(r"Why do we", r" care", r"?\\  How does this", r" help", "?",
+                       tex_template=TexTemplateLibrary.threeb1b)
+        question[1].set_color(GREEN)
+        question[3].set_color(RED)
+        question.shift(2* DOWN)
+        self.play(Write(question))
         self.next_slide()
-        better = Tex(r"$end(a_1) \le end(o_1)$",font_size=30).next_to(greenDashed, DOWN)
-        self.play(Write(better))
-
-
-        r[5] = Rectangle(height=0.4, width=wid[5], color=RED)
-        r[5].align_to(np.array([startingx[5],startingy[5],0]),LEFT+UP)
-        textinsideRectangle[5] = Tex("{$o_2$", font_size=25,stroke_width=2).shift(r[5].get_center())
-        self.play(Create(r[5]), Write(textinsideRectangle[5]))
-        textinsideRectangle[5].add_updater(lambda x: x.move_to(r[5].get_center()))
+        self.play(FadeOut(what, what2, properties, question))
         self.next_slide()
-        q1 = Text("Can this happen?", font_size=25, color=RED).next_to(r[5], UP)
-        r5copy = r[5].copy()
-        self.play(Create(q1),r[5].animate.become(Rectangle(height=0.4,width=1, color=RED).align_to(np.array([startingx[5],startingy[5],0]),LEFT+UP)))
-        self.next_slide()
-        self.play(q1.animate.become(Text("No", font_size=25, color=GREEN)).next_to(r[5], UP))
-        self.next_slide()
-        self.play(FadeOut(q1),r[5].animate.become(r5copy))
-        self.play(redDashed.animate.shift(RIGHT*(startingx[5]+wid[5]-startingx[4]-wid[4])),greenDashed.animate.shift(RIGHT*(startingx[1]+wid[1]-startingx[0]-wid[0])))
-        self.play(better.animate.become(Tex(r"$end(a_2) \le end(o_2)$",font_size=30).next_to(greenDashed, DOWN)))
-
-        r[6] = Rectangle(height=0.4, width=wid[6], color=RED)
-        r[6].align_to(np.array([startingx[6],startingy[6],0]),LEFT+UP)
-        textinsideRectangle[6] = Tex("{$o_3$", font_size=25,stroke_width=2).shift(r[6].get_center())
-        self.play(Create(r[6]), Write(textinsideRectangle[6]))
-        textinsideRectangle[6].add_updater(lambda x: x.move_to(r[6].get_center()))
-        self.next_slide()
-        self.play(redDashed.animate.shift(RIGHT*(startingx[6]+wid[6]-startingx[5]-wid[5])),greenDashed.animate.shift(RIGHT*(startingx[2]+wid[2]-startingx[1]-wid[1])))
-        self.play(better.animate.become(Tex(r"$end(a_3) \le end(o_3)$",font_size=30).next_to(greenDashed, DOWN)))
-        self.next_slide()
-
-        r[7] = Rectangle(height=0.4, width=wid[7], color=RED)
-        r[7].align_to(np.array([startingx[7],startingy[7],0]),LEFT+UP)
-        textinsideRectangle[7] = Tex("{$o_4$", font_size=25,stroke_width=2).shift(r[7].get_center())
-        self.play(Create(r[7]), Write(textinsideRectangle[7]))
-        textinsideRectangle[7].add_updater(lambda x: x.move_to(r[7].get_center()))
-        self.next_slide()
-        self.play(redDashed.animate.shift(RIGHT*(startingx[7]+wid[7]-startingx[6]-wid[6])),greenDashed.animate.shift(RIGHT*(startingx[3]+wid[3]-startingx[2]-wid[2])))
-        self.play(better.animate.become(Tex(r"$end(a_4) \le end(o_4)$",font_size=30).next_to(greenDashed, DOWN)))
-        self.next_slide()
-
-        r[8] = Rectangle(height=0.4, width=wid[8], color=RED)
-        r[8].align_to(np.array([startingx[8],startingy[8],0]),LEFT+UP)
-        textinsideRectangle[8] = Tex("{$o_5$", font_size=25,stroke_width=2).shift(r[8].get_center())
-        self.play(Create(r[8]), Write(textinsideRectangle[8]))
-        q1 = Tex(r"Can $o_5$ exists?", font_size=35, color=RED).next_to(r[8], UP)
-        self.play(Write(q1))
-        self.next_slide()
-        self.play(q1.animate.become(Text("No", font_size=25, color=GREEN)).next_to(r[8], UP))
-        self.next_slide()
-        self.play(FadeOut(q1),FadeOut(r[8]),FadeOut(textinsideRectangle[8]))
-        self.next_slide()
-        self.play(
-            *[FadeOut(mob)for mob in self.mobjects]
-            # All mobjects in the screen are saved in self.mobjects
-        )
-
 
 class IntervalScheduling3(Slide):
     def construct(self):
