@@ -16,22 +16,28 @@ from Util import Util
 # Use -n <number> to skip ahead to the n'th animation of a scene.
 
 M_graph_edge_list = [(1,2),(2,3),(3,4),(4,5)]
+M_graph = Graph(vertices=[1,2,4,5,3],edges=M_graph_edge_list,layout="circular",layout_scale=0.6).set_color(GREEN)
 A_graph_edge_list = [(1,2),(1,3),(2,3),(3,4),(1,5)]
+A_graph = Graph(vertices=range(1,6),edges=A_graph_edge_list,layout="circular",layout_scale=0.6).set_color(RED)
+
+def move_to_origin():
+    M_graph.move_to(ORIGIN)
+    A_graph.move_to(ORIGIN)
 
 class BipartiteGraph1(Slide):
     def construct(self):
         myBaseTemplate = TexTemplate(documentclass="\documentclass[preview]{standalone}")
         myBaseTemplate.add_to_preamble(r"\usepackage{ragged2e}")
         myBaseTemplate.add_to_preamble(r"\usepackage{xcolor}")
+        move_to_origin()
         answer = Tex("One of them is a Bipartite Graph! Any guesses?",font_size=50, stroke_width=2)
-        M_graph = Graph(vertices=[1,2,4,5,3],edges=M_graph_edge_list,layout="circular",layout_scale=0.6).set_color(GREEN)
-        self.play(Write(M_graph.shift(DOWN/2 + 2*LEFT)))
-        A_graph = Graph(vertices=range(1,6),edges=A_graph_edge_list,layout="circular",layout_scale=0.6).set_color(RED).shift(DOWN/2 + 2*RIGHT)
-        self.play(TransformFromCopy(M_graph, A_graph),run_time=2)
+        self.play(Write(M_graph.shift(DOWN/2 + 2*LEFT)), run_time=2)
+        A_graph.shift(DOWN/2 + 2*RIGHT)
+        self.play(TransformFromCopy(M_graph, A_graph), run_time=2)
         
         graph_group = VGroup(M_graph, A_graph)
         question = Tex("What do you observe from these two graphs?",font_size=40, stroke_width=2).shift(0.5*UP)
-        self.play(Write(question))
+        self.play(Write(question), run_time=2)
         self.next_slide()
         self.play(FadeOut(question))
         #self.next_slide()
@@ -72,28 +78,42 @@ class BipartiteGraph2(Slide):
                    tex_environment=None,
                    tex_template=TexTemplateLibrary.threeb1b)
         what2.shift(1.1*LEFT)
-        self.play(Write(what))
+        move_to_origin()
+        self.play(Write(what), run_time=3)
         self.next_slide()
-        self.play(what.animate.shift(3*UP))
-        self.play(Write(what2))
+        self.play(FadeOut(what))
+        self.play(Write(what2), run_time=3)
         self.next_slide()
-        self.play(what2.animate.shift(2*UP))
+        self.play(what2.animate.shift(3*UP))
         properties = Tex(
             "\item There are $some$ edges (possibly $none$) \\\\ connecting vertices in $X$ with those in $Y$.\item There are no edges connecting vertices within $X$ or $Y$.", 
             tex_environment="enumerate",
             tex_template=TexTemplateLibrary.threeb1b)
-        self.play(Write(properties.align_on_border(LEFT)))
+        self.play(Write(properties.align_on_border(LEFT)), run_time=4)
         self.next_slide()
+        M_graph.shift(2 * DL)
+        A_graph.shift(2 * DR)
+        self.play(Write(M_graph), Write(A_graph))
+        self.next_slide()
+        self.play( 
+                M_graph.animate
+                    .change_layout("partite", partitions=[[1,5,3],[2,4]], layout_scale=0.6).shift(2 * DL),
+            run_time=3
+        )
+        self.next_slide()
+        self.play(Wiggle(A_graph), run_time=2)
+        self.next_slide()
+        self.play(FadeOut(what2, properties))
         #self.play(VGroup(what, properties).animate.scale(0.45).shift(3 * LEFT + UP))
-        question = Tex(r"Why do we", r" care", r"?\\  How does this", r" help", "?",
+        question = Tex(r"Notice anything", r" else", " in this graph? \\ Why is this ", "$not$ ", "bipartite?",
                        tex_template=TexTemplateLibrary.threeb1b)
-        question[1].set_color(GREEN)
+        question[1].set_color(RED)
         question[3].set_color(RED)
-        question.shift(2* DOWN)
-        self.play(Write(question))
+        question.shift(2 * UP)
+        self.play(A_graph.animate.move_to(ORIGIN).scale(2), FadeOut(M_graph), run_time=2)
+        self.play(Write(question), run_time=2)
         self.next_slide()
-        self.play(FadeOut(what, what2, properties, question))
-        self.next_slide()
+        self.play(FadeOut(question, A_graph))
 
 class IntervalScheduling3(Slide):
     def construct(self):
