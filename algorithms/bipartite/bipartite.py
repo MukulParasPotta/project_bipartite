@@ -36,13 +36,13 @@ class BipartiteGraph1(Slide):
         self.play(TransformFromCopy(M_graph, A_graph), run_time=2)
         
         graph_group = VGroup(M_graph, A_graph)
-        question = Tex("What do you observe from these two graphs?",font_size=40, stroke_width=2).shift(0.5*UP)
+        question = Tex("What do you observe from these two graphs?",font_size=40, stroke_width=2).shift(UP)
         self.play(Write(question), run_time=2)
         self.next_slide()
         self.play(FadeOut(question))
         #self.next_slide()
 
-        question2 = Tex("How is this graph different from this graph?",font_size=40, stroke_width=2).shift(0.5*UP)
+        question2 = Tex("How is this graph different from this graph?",font_size=40, stroke_width=2).shift(UP)
         self.play(Write(question2), run_time=3)
         self.play(Indicate(M_graph))
         M_graph.save_state()
@@ -53,7 +53,7 @@ class BipartiteGraph1(Slide):
         
 
         M_graph.restore()
-        M_graph.shift(2*UP)
+        M_graph.shift(2.5*UP)
         A_graph.restore()
         A_graph.shift(DOWN)
         header_group = VGroup(answer, graph_group)
@@ -65,8 +65,7 @@ class BipartiteGraph1(Slide):
         answer = Tex("This one is! But... why?")
         self.play(Write(answer), Indicate(M_graph))
         self.next_slide()
-        self.play(FadeOut(answer, M_graph, A_graph))
-        self.next_slide()
+        Util.cleanUp(self)
 
 class BipartiteGraph2(Slide):
     def construct(self):
@@ -89,7 +88,7 @@ class BipartiteGraph2(Slide):
             "\item There are $some$ edges (possibly $none$) \\\\ connecting vertices in $X$ with those in $Y$.\item There are no edges connecting vertices within $X$ or $Y$.", 
             tex_environment="enumerate",
             tex_template=TexTemplateLibrary.threeb1b)
-        self.play(Write(properties.align_on_border(LEFT)), run_time=4)
+        self.play(Write(properties.align_on_border(LEFT).next_to(what2, DOWN)), run_time=4)
         self.next_slide()
         M_graph.shift(2 * DL)
         A_graph.shift(2 * DR)
@@ -97,7 +96,7 @@ class BipartiteGraph2(Slide):
         self.next_slide()
         self.play( 
                 M_graph.animate
-                    .change_layout("partite", partitions=[[1,5,3],[2,4]], layout_scale=0.6).shift(2 * DL),
+                    .change_layout("partite", partitions=[[1,3,5],[2,4]], layout_scale=0.6).shift(2 * DL),
             run_time=3
         )
         self.next_slide()
@@ -113,255 +112,330 @@ class BipartiteGraph2(Slide):
         self.play(A_graph.animate.move_to(ORIGIN).scale(2), FadeOut(M_graph), run_time=2)
         self.play(Write(question), run_time=2)
         self.next_slide()
-        self.play(FadeOut(question, A_graph))
-
-class IntervalScheduling3(Slide):
-    def construct(self):
-        title = Title("Proof Strategy: Greedy is always better than Optimum", include_underline=TRUE)
-        self.play(Write(title))
+        self.play(FadeOut(question))
+        self.next_slide()
+        answer = Tex("Because it contains an ", "odd ", "cycle!")
+        answer[1].set_color(RED)
+        answer.shift(2 * UP)
+        self.play(Write(answer))
         self.next_slide()
         Util.cleanUp(self)
 
-        lemma=Tex( "Lemma: ", "Let $a_1,a_2,\dots,a_k$ ", "be the the answer of our algorithm and ", "$o_1,o_2,\dots,o_{\ell}$ ", "be the optimum. Then, ", "$end(a_i) \le end(o_i)$ ", "for all ","$1 \le i \le k$.").set_height(0.6)
-        lemma.set_color_by_tex_to_color_map({"Lemma":BLUE})
-        lemma.align_to(np.array([-6.5,3,0]),LEFT+UP)
-        line = Line(start = lemma.get_left(), end=lemma.get_right()).next_to(lemma, DOWN*0.5).set_opacity(0.5).set_color(BLUE)
-        self.play(Write(lemma), GrowFromCenter(line), run_time=3)
-        self.next_slide()
-        proof = Tex("Proof: ", "By Induction on the number of classes in our answer.").set_height(0.3).next_to(lemma,DOWN).align_to(lemma,LEFT)
-        proof[0].set_color(BLUE)
-        line1 = Line(start = line.get_left(), end=line.get_right()).align_to(proof,LEFT+DOWN).shift(DOWN*0.2).set_opacity(0.5).set_color(BLUE)
-        self.play(Write(proof),GrowFromCenter(line1))
-        self.next_slide()
-        base = Tex( "Base Case: ", "$i = 1$.").set_height(0.25).next_to(proof,DOWN).align_to(proof,LEFT)
-        base[0].set_color(BLUE)
-        self.play(Write(base))
-        line2 = DashedLine(start = np.array([0,-4,0]), end=np.array([0,4,0]),color=RED).move_to(line1.get_right()).shift(RIGHT*0.1)
-        self.play(GrowFromEdge(line2,DOWN))
-
-        l0 = NumberLine(
-            x_range=[0, 12, 1],
-            length=3,
-            color=BLUE,
-        )
-        l0.next_to(line1).shift(DOWN*2)
-        r1 = Rectangle(height=0.25, width=1).set_color(GREEN)
-        r1.align_to(l0.get_left(),LEFT+UP).shift(0.25*RIGHT+UP*0.5)
-        textinsideRectangle1 = Tex("{$a_1$", font_size=25,stroke_width=2).shift(r1.get_center())
-
-        r2 = Rectangle(height=0.25, width=1.25).set_color(RED)
-        r2.align_to(l0.get_left(),LEFT+UP).shift(0.75*RIGHT+UP)
-        textinsideRectangle2 = Tex("{$o_1$", font_size=25,stroke_width=2).shift(r2.get_center())
-
-        self.play(Create(l0),Create(r2),Create(r1),Create(textinsideRectangle1),Create(textinsideRectangle2))
-        self.next_slide()
-
-        base1 = Tex("Since our algorithm chooses the first interval with least ending time, $end(o_1) \le end(a_1)$").set_height(0.6).next_to(base,DOWN).align_to(base,LEFT)
-        line3 = Line(start = line.get_left(), end=line.get_right()).align_to(base1,LEFT+DOWN).shift(DOWN*0.2).set_opacity(0.5).set_color(BLUE)
-        self.play(Create(base1),GrowFromCenter(line3))
-        self.next_slide()
-
-        induction = Tex("Induction hypothesis: ", "$end(a_i) \le end(o_i)$ ", "for all ", "$i < {\ell}$.").set_height(0.3).next_to(base1,DOWN).align_to(base1,LEFT)
-        induction[0].set_color(BLUE)
-        self.play(Write(induction))
-        copytextinsideRectangle1 = Tex("{$a_{i}$", font_size=25,stroke_width=2).shift(r1.get_center())
-        copytextinsideRectangle2 = Tex("{$o_{i}$", font_size=25,stroke_width=2).shift(r2.get_center())
-
-        self.play(Rotate(l0,PI),Rotate(r1,PI), Rotate(r2,PI),textinsideRectangle1.animate.become(copytextinsideRectangle1), textinsideRectangle2.animate.become(copytextinsideRectangle2))
-
-        r3 = Rectangle(height=0.25, width=0.75).set_color(RED)
-        r3.align_to(r2,LEFT+UP).shift(1.5*RIGHT)
-        textinsideRectangle3 = Tex("{$o_{i+1}$", font_size=25,stroke_width=2).shift(r3.get_center())
-        self.next_slide()
-
-        induction1 = Tex("This implies that ", "$start(o_{i+1}) > end(a_{i})$.").set_height(0.3).next_to(induction,DOWN).align_to(induction,LEFT)
-        induction2 = Tex("Thus, our algorithm could also have choosen $o_{i+1}$ as the next interval. Thus, $end(a_{i+1}) \le end(o_{i+1})$").set_height(0.6).next_to(induction1,DOWN).align_to(induction1,LEFT)
-
-        self.play(Create(r3),Write(textinsideRectangle3))
-        self.play(Write(induction1))
-        self.next_slide()
-
-        line4 = Line(start = line.get_left(), end=line.get_right()).align_to(induction2,LEFT+DOWN).shift(DOWN*0.2).set_opacity(0.5).set_color(BLUE)
-        r4 = Rectangle(height=0.25, width=0.75).set_color(GREEN)
-        r4.align_to(r1,LEFT+UP).shift(1.5*RIGHT)
-        textinsideRectangle4 = Tex("{$a_{i+1}$", font_size=25,stroke_width=2).shift(r4.get_center())
-        self.play(Write(induction2),GrowFromCenter(line4),Create(r4),Create(textinsideRectangle4))
-
-        self.next_slide()
-        corollary = Tex("Corollary: ", "Let $a_1,a_2,\dots,a_k$ ", "be the the answer of our algorithm and ", "$o_1,o_2,\dots,o_{\ell}$ ", "be the optimum. Then, $k = \ell$." )
-        corollary.set_color_by_tex_to_color_map({"Corollary":BLUE}).set_height(0.6).next_to(induction2,DOWN).align_to(induction2,LEFT)
-
-        self.play(Write(corollary))
-
-class IntervalScheduling4(Slide):
+class BipartiteProperty1(Slide):
     def construct(self):
-        title = Title("Proof Strategy: The Exchange Argument")
-        self.play(Write(title))
+        text = Tex("Property: ","If a graph G is Bipartite,then it cannot ").align_on_border(UL)
+        # underline_1="Property"
+        text2= Tex(" contain an odd cycle").next_to(text,DOWN)
+        text1= Tex("Proof :      By Contradiction               ").next_to(text2, DOWN)
+        text3= Tex("Let us assume that this graph is bipartite:").align_on_border(UP)
+        #.next_to(text,LEFT,buff=1)
+        # text1.move_to(LEFT*2.8)
+        # text1.to_corner(LEFT*2.9)
+        # text2.move_to(UL*1.2)
+        # text3.move_to(DL*0.8)
+        
+        # index_to_underline = text.text.index(underline_1)
+
+        # Create an Underline object for the specified word
+        underline = Underline(text[0], color=WHITE)
+
+        # Add the Text and Underline objects to the scene
+        self.play(Write(text), Create(underline))
+        self.play(Write(text2))
+        self.next_slide()
+        # text1.move_to(LEFT*2.3)
+        self.play(Write(text1))
+        self.next_slide()
+        self.play(FadeOut(text,underline,text2,text1))
+
+        self.play(Write(text3))
+        cycle5 = Graph([1,2,3,4,5],[(1,2),(2,3),(3,4),(4,5),(5,1)],layout="circular",labels=True)
+        self.play(Create(cycle5))
+        self.next_slide()
+        t1 = Tex("Pick a vertex, and assume it is in", " set A")
+        t1[1].set_color(RED)
+        t1.shift(3 * DOWN)
+        self.play(cycle5.vertices[1].animate.set_color(RED),Write(t1),FadeOut(text3))
+        self.next_slide()
+        self.play(FadeOut(t1))
+        t1 = Tex("Then its neighbour goes to", " set B")
+        t1[1].set_color(BLUE)
+        t1.shift(3 * DOWN)
+        # print(cycle5.edges[(1,2)].animate.set_color_by_gradient(RED, BLUE))
+        self.play(# cycle5.edges[(1,2)].animate.set_color(color=[RED, BLUE]),
+                #   cycle5.edges[(5,1)].animate.set_color(color=[BLUE, RED]),
+                  cycle5.vertices[2].animate.set_color(BLUE),
+                #   cycle5.vertices[5].animate.set_color(BLUE),
+                  Write(t1)
+                )
+        self.next_slide()
+        self.play(FadeOut(t1))
+        t1 = Tex("And so on...")
+        t1.shift(3 * DOWN)
+        # print(cycle5.edges[(1,2)].animate.set_color_by_gradient(RED, BLUE))
+        self.play(# cycle5.edges[(2,3)].animate.set_color(color=[BLUE, RED]),
+                #   cycle5.edges[(3,4)].animate.set_color(color=[RED, BLUE]),
+                  cycle5.vertices[3].animate.set_color(RED),
+                  cycle5.vertices[4].animate.set_color(BLUE),
+                  Write(t1)
+                )
+        self.next_slide()
+        self.play(FadeOut(t1))
+        t1 = Tex("Until ", "now",". Which set does this belong to?")
+        t1[1].set_color(YELLOW)
+        t1.shift(3 * DOWN)
+        self.play(cycle5.vertices[5].animate.set_color(YELLOW),
+                #   cycle5.vertices[4].animate.set_color(YELLOW),
+                #   cycle5.edges[(3,4)].animate.set_color(YELLOW),
+                #   cycle5.edges[(5,1)].animate.set_color(color=[RED,YELLOW]),
+                #   cycle5.edges[(4,5)].animate.set_color(color=[BLUE,YELLOW]),
+                  Write(t1)
+                )
+        self.next_slide()
+        self.play(FadeOut(t1))
+        t1 = Tex("Can it be in ", "either", " set?")
+        t1[1].set_color(GREEN)
+        t1.shift(3 * DOWN)
+        self.play(Write(t1))
+        self.next_slide()
+        t2 = Tex("No! This is a contradiction")
+        t2.shift(3 * DOWN)
+        self.play(Transform(t1,t2))
+        self.play(FadeOut(t2))
+        self.next_slide()
+        self.wait(2)
+        Util.cleanUp(self)
+
+class ArgumentScene(Slide):
+    def construct(self):
+        # Create the text with the argument
+        argument_text = Tex("Argument",": If a graph has no odd cycle, then it is Bipartite").align_on_border(UP)
+
+
+        # Find the index of the word to underline
+        # word_to_underline = "Argument"
+        # index_to_underline = argument_text.text.index(word_to_underline)
+
+        # Create an Underline object for the specified word
+        underline = Underline(argument_text[0], color=WHITE)
+
+        # Add the Text and Underline objects to the scene
+        self.play(Write(argument_text), Create(underline))
+        self.next_slide()
+        t1 = Tex("Consider below two graphs:").next_to(argument_text, DOWN)
+        self.play(Write(t1))
+
+        no_cycle_graph = Graph([1,2,3,4,5,6],[(1,2),(2,3),(3,4),(3,5),(2,6)],layout="circular",layout_scale=0.85).shift(4 * LEFT)
+        even_cycle_graph = Graph([1,2,3,4,5,6],[(1,2),(2,3),(3,4),(3,5),(2,6),(1,4),(5,6)],layout="circular",layout_scale=0.85).shift(4 * RIGHT)
+
+        self.play(Create(no_cycle_graph),Create(even_cycle_graph),FadeOut(t1))
+        t1 = Tex("Is any one of these graphs bipartite?").shift(3 * DOWN)
+        self.play(Write(t1))
+        self.next_slide()
+        self.play(FadeOut(t1),no_cycle_graph.animate.move_to(ORIGIN).scale(2),FadeOut(even_cycle_graph,target_position=8*RIGHT,scale=0.2))
+        self.play(no_cycle_graph.animate.change_layout(layout="partite",partitions=[[1,3,6],[2,4,5]],layout_scale=2))
+        self.next_slide()
+        o_1 = Ellipse(width=1, height=4.5, color=GREEN_B).move_to(no_cycle_graph.vertices[3].get_center())
+        o_2 = Ellipse(width=1, height=4.5, color=GREEN_B).move_to(no_cycle_graph.vertices[4].get_center())
+        t1 = Tex("Observe there are no cycles in this graph").shift(3 * DOWN)
+        self.play(Write(o_1),Write(o_2),Write(t1))
+        self.next_slide()
+        t2 = Tex("This one is bipartite!").shift(3 * DOWN)
+        self.next_slide()
+        self.play(Transform(t1,t2,replace_mobject_with_target_in_scene=True))
+        self.next_slide()
+        t3 = Tex("What about the other one?").shift(3 * DOWN)
+        self.play(Transform(t2,t3,replace_mobject_with_target_in_scene=True),FadeOut(o_1,o_2),FadeOut(no_cycle_graph,target_position=8*LEFT,scale=0.2),even_cycle_graph.animate.move_to(ORIGIN).scale(2))
+        self.next_slide()
+        self.wait(2)
+        t1 = Tex("This graph has only even length cycles").shift(3 * DOWN)
+        self.play(Transform(t3,t1,replace_mobject_with_target_in_scene=True))
+        self.play(Indicate(VGroup(
+                even_cycle_graph.vertices[5],
+                even_cycle_graph.vertices[2],
+                even_cycle_graph.vertices[3],
+                even_cycle_graph.vertices[6],
+                even_cycle_graph.edges[(2,6)],
+                even_cycle_graph.edges[(2,3)],
+                even_cycle_graph.edges[(3,5)],
+                even_cycle_graph.edges[(5,6)]),
+                rate_func=rate_functions.there_and_back_with_pause
+            )
+        )
+        self.play(Indicate(VGroup(
+                even_cycle_graph.vertices[1],
+                even_cycle_graph.vertices[2],
+                even_cycle_graph.vertices[3],
+                even_cycle_graph.vertices[4],
+                even_cycle_graph.edges[(1,2)],
+                even_cycle_graph.edges[(2,3)],
+                even_cycle_graph.edges[(3,4)],
+                even_cycle_graph.edges[(1,4)]),
+                rate_func=rate_functions.there_and_back_with_pause
+            )
+        )
+        self.play(Indicate(VGroup(
+                even_cycle_graph.vertices[5],
+                even_cycle_graph.vertices[2],
+                even_cycle_graph.vertices[3],
+                even_cycle_graph.vertices[6],
+                even_cycle_graph.vertices[1],
+                even_cycle_graph.vertices[4],
+                even_cycle_graph.edges[(1,2)],
+                even_cycle_graph.edges[(2,6)],
+                even_cycle_graph.edges[(3,5)],
+                even_cycle_graph.edges[(3,4)],
+                even_cycle_graph.edges[(1,4)],
+                even_cycle_graph.edges[(5,6)]),
+                rate_func=rate_functions.there_and_back_with_pause
+            )
+        )
+        self.next_slide()
+        self.play(even_cycle_graph.animate.change_layout(layout="partite",partitions=[[1,3,6],[2,4,5]],layout_scale=2))
+        o_1 = Ellipse(width=1, height=4.5, color=GREEN_B).move_to(even_cycle_graph.vertices[3].get_center())
+        o_2 = Ellipse(width=1, height=4.5, color=GREEN_B).move_to(even_cycle_graph.vertices[4].get_center())
+        
+        t2 = Tex("This is bipartite as well!").shift(3 * DOWN)
+        self.play(Transform(t1,t2,replace_mobject_with_target_in_scene=True),Write(o_1),Write(o_2))
         self.next_slide()
         Util.cleanUp(self)
-        l0 = NumberLine(
-            x_range=[0, 48, 1],
-            length=12,
-            color=BLUE,
-        )
-        l0.align_to(np.array([-6,-1,0]),LEFT+UP)
-        self.play(Create(l0))
 
-        startingx=[-5.5,-4,-1.25,1.1,-6,-3.75,-1.5,1.3,3.15]
-        startingy=[0,0,0,0,1,1,1,1,1]
-        wid=[1,2,2,1.5,1.75,2,2.25,1.5,0.5]
-        textinsideRectangle = [None]*9
-        r = [None]*22
-        for i in range(4):
-            r[i] = Rectangle(height=0.4, width=wid[i], color=GREEN)
-            r[i].align_to(np.array([startingx[i],startingy[i],0]),LEFT+UP)
-            textinsideRectangle[i] = Tex("{$a_" + str(i+1) + "$", font_size=30, stroke_width=2).shift(r[i].get_center())
-            self.play(Create(r[i]), Write(textinsideRectangle[i]))
+class Example(Slide):
+    def construct(self):
+        # Define the vertices and edges
+        Vertices = [1, 2, 3, 4, 5, 6, 7, 8]
+        Edges = [(1, 2), (1, 3), (1, 5), (2, 6), (2, 4), (3, 7), (3, 4), (5, 6), (5, 7), (6, 8), (5, 7),(8,4)]
 
-        textinsideRectangle[0].add_updater(lambda x: x.move_to(r[0].get_center()))
-        textinsideRectangle[1].add_updater(lambda x: x.move_to(r[1].get_center()))
-        textinsideRectangle[2].add_updater(lambda x: x.move_to(r[2].get_center()))
-        textinsideRectangle[3].add_updater(lambda x: x.move_to(r[3].get_center()))
-
-        ourAnswer = Text("Our Answer", font_size=25, color=GREEN ).next_to(r[3]).shift(RIGHT)
-        self.play(Write(ourAnswer))
-
-        optimalAnswer = Text("Optimal Answer", font_size=25, color=RED).align_to(ourAnswer,LEFT).align_to(np.array([0,1,0]),UP)
-        self.play(Create(optimalAnswer))
-        r[4] = Rectangle(height=0.4, width=wid[4], color=RED)
-        r[4].align_to(np.array([startingx[4],startingy[4],0]),LEFT+UP)
-        textinsideRectangle[4] = Tex("{$o_1$", font_size=25,stroke_width=2).shift(r[4].get_center())
-
-        self.play(Create(r[4]), Write(textinsideRectangle[4]))
-        textinsideRectangle[4].add_updater(lambda x: x.move_to(r[4].get_center()))
-        greenDashed = DashedLine(start=np.array([startingx[0]+wid[0],-1,0]), end=np.array([startingx[0]+wid[0],4,0]),color=GREEN )
-        redDashed = DashedLine(start=np.array([startingx[4]+wid[4],-1,0]), end=np.array([startingx[4]+wid[4],4,0]),color=RED )
-        self.play(GrowFromEdge(greenDashed,DOWN))
-        self.play(GrowFromEdge(redDashed,DOWN))
-
-        better = Tex(r"$end(a_1) \le end(o_1)$",font_size=30).next_to(greenDashed, DOWN)
-        self.play(Write(better))
+        t1 = Tex("How to decide whether a graph is bipartite?").align_on_border(UP)
+        self.play(Write(t1))
         self.next_slide()
-
-        self.play(r[4].animate.set_opacity(0.2),textinsideRectangle[4].animate.set_opacity(0.2),r[0].animate.shift(UP))
-        observation = Tex("Observation: ", "There is an optimum that starts wiith $a_1$.").align_to(l0, LEFT+UP).shift(DOWN).set_height(0.3)
-        observation[0].set_color(BLUE)
-        self.play(Write(observation))
+        t2 = Tex("Given what we know, we need to check for odd cycles!")
+        self.play(Write(t2))
         self.next_slide()
-
-        r[5] = Rectangle(height=0.4, width=wid[5], color=RED)
-        r[5].align_to(np.array([startingx[5],startingy[5],0]),LEFT+UP)
-        textinsideRectangle[5] = Tex("{$o_2$", font_size=25,stroke_width=2).shift(r[5].get_center())
-        self.play(Create(r[5]), Write(textinsideRectangle[5]))
-        textinsideRectangle[5].add_updater(lambda x: x.move_to(r[5].get_center()))
-
-        self.play(redDashed.animate.shift(RIGHT*(startingx[5]+wid[5]-startingx[4]-wid[4])),greenDashed.animate.shift(RIGHT*(startingx[1]+wid[1]-startingx[0]-wid[0])))
-        self.play(better.animate.become(Tex(r"$end(a_2) \le end(o_2)$",font_size=30).next_to(greenDashed, DOWN)))
+        t3 = Tex("If odd cycles exist : graph is not bipartite.").next_to(t2,DOWN)
+        t4 = Tex("Otherwise graph is bipartite.").next_to(t3,DOWN)
+        self.play(FadeOut(t1), Write(t3),Write(t4))
         self.next_slide()
-
-        self.play(r[5].animate.set_opacity(0.2),textinsideRectangle[5].animate.set_opacity(0.2),r[1].animate.shift(UP))
-        observationcopy = Tex("Observation: ", "There is an optimum that starts wiith $a_1,a_2$.").align_to(l0, LEFT+UP).shift(DOWN).set_height(0.3)
-        observationcopy[0].set_color(BLUE)
-        self.play(observation.animate.become(observationcopy))
+        Util.cleanUp(self)
+        t1 = Tex("How to check for odd cycles?").align_on_border(UP)
+        self.play(Write(t1))
         self.next_slide()
-
-        r[6] = Rectangle(height=0.4, width=wid[6], color=RED)
-        r[6].align_to(np.array([startingx[6],startingy[6],0]),LEFT+UP)
-        textinsideRectangle[6] = Tex("{$o_3$", font_size=25,stroke_width=2).shift(r[6].get_center())
-        self.play(Create(r[6]), Write(textinsideRectangle[6]))
-        textinsideRectangle[6].add_updater(lambda x: x.move_to(r[6].get_center()))
+        t2 = Tex("We can use BFS to check for odd cycles!")
+        self.play(Write(t2))
         self.next_slide()
-        self.play(redDashed.animate.shift(RIGHT*(startingx[6]+wid[6]-startingx[5]-wid[5])),greenDashed.animate.shift(RIGHT*(startingx[2]+wid[2]-startingx[1]-wid[1])))
-        self.play(better.animate.become(Tex(r"$end(a_3) \le end(o_3)$",font_size=30).next_to(greenDashed, DOWN)))
+        t3 = Tex("BFS traverses the graph in levels.")
+        t4 = Tex("We can put vertices from even-numbered levels in set A,").next_to(t3,DOWN)
+        t5 = Tex("and those from odd-numbered levels in set B.").next_to(t4,DOWN)
+        text_group = VGroup(t3,t4,t5).shift(4 * LEFT + 2 * UP).scale(0.55)
+        self.play(Transform(t2,t3))
+        example_graph = Graph(Vertices, Edges, labels=True, layout="kamada_kawai")
+        example_graph.shift(4*RIGHT).scale(0.85)
+        self.play(FadeOut(t3),FadeIn(example_graph))
         self.next_slide()
-        self.play(r[6].animate.set_opacity(0.2),textinsideRectangle[6].animate.set_opacity(0.2),r[2].animate.shift(UP))
-        observationcopy = Tex("Observation: ", "There is an optimum that starts wiith $a_1,a_2,a_3$.").align_to(l0, LEFT+UP).shift(DOWN).set_height(0.3)
-        observationcopy[0].set_color(BLUE)
-        self.play(observation.animate.become(observationcopy))
-
-        r[7] = Rectangle(height=0.4, width=wid[7], color=RED)
-        r[7].align_to(np.array([startingx[7],startingy[7],0]),LEFT+UP)
-        textinsideRectangle[7] = Tex("{$o_4$", font_size=25,stroke_width=2).shift(r[7].get_center())
-        self.play(Create(r[7]), Write(textinsideRectangle[7]))
-        textinsideRectangle[7].add_updater(lambda x: x.move_to(r[7].get_center()))
+        self.play(FadeIn(text_group[0]), example_graph.animate.change_layout(layout="partite",partitions=[[1],[2,3,5],[4,6,7],[8]],layout_config={'align':"horizontal"}).shift(4 * RIGHT))
         self.next_slide()
-        self.play(redDashed.animate.shift(RIGHT*(startingx[7]+wid[7]-startingx[6]-wid[6])),greenDashed.animate.shift(RIGHT*(startingx[3]+wid[3]-startingx[2]-wid[2])))
-        self.play(better.animate.become(Tex(r"$end(a_4) \le end(o_4)$",font_size=30).next_to(greenDashed, DOWN)))
+        self.play(FadeIn(text_group[1]), 
+                  example_graph.vertices[1].animate.set_color(RED),
+                  example_graph.vertices[4].animate.set_color(RED),
+                  example_graph.vertices[6].animate.set_color(RED),
+                  example_graph.vertices[7].animate.set_color(RED)
+                )
         self.next_slide()
-        self.play(r[7].animate.set_opacity(0.2),textinsideRectangle[7].animate.set_opacity(0.2),r[3].animate.shift(UP))
-        observationcopy = Tex("Observation: ", "There is an optimum that starts wiith $a_1,a_2,a_3,a_4$.").align_to(l0, LEFT+UP).shift(DOWN).set_height(0.3)
-        observationcopy[0].set_color(BLUE)
-        self.play(observation.animate.become(observationcopy))
+        self.play(FadeIn(text_group[2]), 
+                  example_graph.vertices[2].animate.set_color(BLUE),
+                  example_graph.vertices[3].animate.set_color(BLUE),
+                  example_graph.vertices[5].animate.set_color(BLUE),
+                  example_graph.vertices[8].animate.set_color(BLUE)
+                )
         self.next_slide()
-
+        t1 = Tex("Can such an edge", " exist","?").shift(3 * DOWN)
+        t1[1].set_color(YELLOW)
+        self.play(example_graph.animate.add_edges(*[(1,7)], edge_type=ArcBetweenPoints))
+        self.play(example_graph.edges[(1,7)].animate.set_color(YELLOW),
+                  Write(t1)
+                )
+        self.next_slide()
+        t2 = Tex("This is an edge across levels, and creates an odd cycle!").shift(3 * DOWN)
+        self.play(Transform(t1,t2))
         self.play(
-            *[FadeOut(mob)for mob in self.mobjects]
-            # All mobjects in the screen are saved in self.mobjects
+            Indicate(
+                VGroup(
+                    example_graph.vertices[1],
+                    example_graph.vertices[5],
+                    example_graph.vertices[7],
+                    example_graph.edges[(1,5)],
+                    example_graph.edges[(1,7)],
+                    example_graph.edges[(5,7)]
+                ),
+                rate_func=rate_functions.there_and_back_with_pause
+            )
         )
-        title = Title("Homework: Try to write in your own words.")
-        lemma = Tex("Lemma: ", "Let $a_1,a_2,\dots,a_{\ell}$ be the our answer, then for all $1 \le i \le \ell$, there is an optimum that starts with $a_1,a_2, \dots, a_i$.").move_to(np.array([0,2,0])).set_height(0.8)
-        lemma[0].set_color(BLUE)
-        self.play(Write(title),Write(lemma))
-
-        corollary = Tex("Corollary: ", "Let $a_1,a_2,\dots,a_k$ ", "be the the answer of our algorithm and ", "$o_1,o_2,\dots,o_{\ell}$ ", "be the optimum. Then, $k = \ell$." )
-        corollary.set_color_by_tex_to_color_map({"Corollary":BLUE}).set_height(0.8).next_to(lemma,DOWN).align_to(lemma,LEFT)
-        self.play(Write(corollary))
-
-class IntervalScheduling5(Slide):
-    def construct(self):
-        title = Title("Implementing the Greedy Algorithm")
-        self.play(Write(title))
+        self.next_slide()
+        self.play(Transform(t2,t1,replace_mobject_with_target_in_scene=True),example_graph.animate.remove_edges(*[(1,7)]))
+        self.play(example_graph.animate.add_edges(*[(4,6)], edge_type=ArcBetweenPoints))
+        self.play(example_graph.edges[(4,6)].animate.set_color(YELLOW))
+        t2 = Tex("This is an edge within a level, and creates an odd cycle!").shift(3 * DOWN)
+        self.play(Transform(t1,t2))
+        self.play(
+            Indicate(
+                VGroup(
+                    example_graph.vertices[4],
+                    example_graph.vertices[6],
+                    example_graph.vertices[8],
+                    example_graph.edges[(8,4)],
+                    example_graph.edges[(4,6)],
+                    example_graph.edges[(6,8)]
+                ),
+                rate_func=rate_functions.there_and_back_with_pause
+            )
+        )
+        self.next_slide()
+        self.play(Transform(t2,t1,replace_mobject_with_target_in_scene=True),example_graph.animate.remove_edges(*[(4,6)]))
+        self.play(example_graph.animate.add_edges(*[(1,8)], edge_type=ArcBetweenPoints))
+        self.play(example_graph.edges[(1,8)].animate.set_color(YELLOW))
+        t2 = Tex("Then that vertex would be part of L1!").shift(3 * DOWN)
+        self.play(Transform(t1,t2))
+        self.play(example_graph.animate.change_layout(layout="partite",partitions=[[1],[2,3,5,8],[4,6,7]],layout_config={'align':"horizontal"}).shift(4 * RIGHT))
         self.next_slide()
         Util.cleanUp(self)
-        code_scale = 0.8
-        buffer=0.5
-        map = {"$\le$": GREEN, "$n$":GOLD,"$S$": GOLD, "$\leftarrow$":GREEN,";":RED, "$i$":GOLD, "\{":ORANGE,"\}":ORANGE,"\cup":GREEN,"while":RED_D,"if":RED_D}
-        code = []
-        code.append(("\\text{Sort the interval based on their end times}",";"))
-        code.append(("$S$", "$\leftarrow$", "First interval in the sorted order",";"))
-        code.append(("$i$", "$\leftarrow$", "\\text{2}",";"))
-        code.append(("while ","(","$i$", "$\le$", "$n$",")"))
-        code.append(("","$\{$"))
-        code.append(("if","(","$i$", "\\text{-th interval does not overlap with the last interval in} ", "$S$",")"))
-        code.append(("$S$", "$\leftarrow$", "$S$", "$\cup$", "$\{$", "$i$", "\\text{-th interval}", "$\}$", ";"))
-        code.append(("","$\}$"))
-        line = [None]*8
-        linenumber = [None]*8
-        surround = [None]*8
-        for i in range(len(line)):
-            line[i] = Tex(*[x for x in code[i]])
-            line[i].scale(code_scale)
-            line[i].set_color_by_tex_to_color_map(map)
-            linenumber[i] = Tex(str(i+1))
-            linenumber[i].scale(code_scale*0.7)
 
-            if i == 0:
-                linenumber[i].shift(np.array([-4,3,0])).to_edge(LEFT)
-                line[i].shift(np.array([-4,3,0])).to_edge(LEFT).shift(RIGHT*0.5)
-            elif i==5:
-                linenumber[i].align_to(linenumber[i-1],LEFT+DOWN).shift(DOWN*buffer).to_edge(LEFT)
-                line[i].align_to(line[i-1],LEFT+DOWN).shift(DOWN*buffer).shift(RIGHT*0.5)
-            elif i==6:
-                linenumber[i].align_to(linenumber[i-1],LEFT+DOWN).shift(DOWN*buffer).to_edge(LEFT)
-                line[i].align_to(line[i-1],LEFT+DOWN).shift(DOWN*buffer).shift(RIGHT)
-            elif i==7:
-                linenumber[i].align_to(linenumber[i-1],LEFT+DOWN).shift(DOWN*buffer).to_edge(LEFT)
-                line[i].align_to(line[i-1],DOWN).align_to(line[0],LEFT).shift(DOWN*buffer)
-            else:
-                linenumber[i].align_to(linenumber[i-1],LEFT+DOWN).shift(DOWN*buffer).to_edge(LEFT)
-                line[i].align_to(line[i-1],LEFT+DOWN).shift(DOWN*buffer)
-            surround[i]=SurroundingRectangle(linenumber[i],corner_radius=0.1,color=MAROON)
+class Ascene(Slide):
+    def construct(self):
+        # Text for the algorithm
+        argument_text = Text("Algorithm",font_size=28).move_to(UP*3)
 
-        self.play(*[Write(x) for x in line],*[Create(x) for x in linenumber],*[Create(x) for x in surround] )
-        self.next_slide()
-        q1 = Text("What is the running time of the algorithm?", color=RED, font_size=30).align_to(linenumber[7], LEFT+DOWN).shift(DOWN)
-        self.play(Write(q1))
-        self.next_slide()
-        ans = Text("Dominated by sorting in the first line.", color=GREEN, font_size=30).align_to(q1, LEFT+DOWN).shift(DOWN*0.5)
-        s = surround[0].copy().move_to(surround[0].get_center()).set_color(YELLOW_E).set(stroke_width=7)
-        self.play( Write(ans),Create(s))
-        self.next_slide()
-        ans1 = Tex("$O(n \log n)$", color=GREEN, font_size=30).align_to(q1, LEFT+DOWN).shift(DOWN*0.5)
-        self.play(ans.animate.become(ans1))
-        self.play(Uncreate(s))
-        self.next_slide()
+
+        # Find the index of the word to underline
+        word_to_underline = "Algorithm"
+        index_to_underline = argument_text.text.index(word_to_underline)
+
+        # Create an Underline object for the specified word
+        underline = Underline(argument_text[index_to_underline:index_to_underline + len(word_to_underline)], color=WHITE)
+
+        # Add the Text and Underline objects to the scene
+        self.play(Write(argument_text))
+        self.play(Create(underline))
+
+        algorithm_text = """
+        Pick an arbitrary vertex v;
+        L = BFS(v); // return layers of vertices
+        If there exists an edge (x,y) such that x and y are 
+           at the same level in the BFS tree
+        {
+            We have found an Odd cycle
+        =>      G is not Bipartite 
+        }
+        Else
+        {
+            We have found a bipartite graph
+            A={L[0],L[2],L[4],...}  even layer vertices
+            B={L[1],L[3],L[5],...}  odd layer vertices
+        }
+        """
+        
+        # Create a Text object
+        algorithm_text_obj = Text(algorithm_text, font_size=25, line_spacing=0.5).to_edge(UL+(UP+0.2), buff=1)
+
+        # Animate the text
+        self.play(Write(algorithm_text_obj))
+        self.wait(2)       
