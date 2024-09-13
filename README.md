@@ -1,4 +1,4 @@
-#Manim-based lectures for CS 610
+#Manim-based lectures for Algorithm CS 610 
 
 Run the below command to render the video @ 1080p:
 > manim -qh ./algorithms/bipartite/bipartite.py BipartiteGraph1
